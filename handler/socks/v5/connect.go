@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"time"
+	"strconv"
 
 	"github.com/go-gost/core/logger"
 	"github.com/go-gost/gosocks5"
