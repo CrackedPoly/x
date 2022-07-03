@@ -35,7 +35,7 @@ func (h *socks5Handler) handleConnect(ctx context.Context, conn net.Conn, networ
 
 	defer cc.Close()
 
-	resp := gosocks5.NewReply(gosocks5.Succeeded, nil)
+	resp := gosocks5.NewReply(gosocks5.Succeeded, toSocksAddr(cc.RemoteAddr()))
 	if err := resp.Write(conn); err != nil {
 		log.Error(err)
 		return err
@@ -50,4 +50,19 @@ func (h *socks5Handler) handleConnect(ctx context.Context, conn net.Conn, networ
 	}).Infof("%s >-< %s", conn.RemoteAddr(), address)
 
 	return nil
+}
+
+func toSocksAddr(addr net.Addr) *gosocks5.Addr {
+	host := "0.0.0.0"
+	port := 0
+	if addr != nil {
+		h, p, _ := net.SplitHostPort(addr.String())
+		host = h
+		port, _ = strconv.Atoi(p)
+	}
+	return &gosocks5.Addr{
+		Type: gosocks5.AddrIPv4,
+		Host: host,
+		Port: uint16(port),
+	}
 }
